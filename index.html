@@ -31,9 +31,42 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      // Automatic GitHub Pages Static Branch Fallback Loader
+      // When GitHub Pages serves the repository root branch directly without Vite running,
+      // ./src/main.tsx cannot be executed by the browser. This fallback automatically loads
+      // the pre-compiled production bundle from ./dist/assets/app.css and ./dist/assets/app.js.
+      window.__loadPrebuiltBundleFallback = function () {
+        if (window.__AURELIA_APP_MOUNTED__ || window.__AURELIA_FALLBACK_LOADED__) return;
+        window.__AURELIA_FALLBACK_LOADED__ = true;
+
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = './dist/assets/app.css';
+        document.head.appendChild(link);
+
+        var script = document.createElement('script');
+        script.type = 'module';
+        script.src = './dist/assets/app.js';
+        document.body.appendChild(script);
+      };
+    </script>
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased selection:bg-blue-600/20 selection:text-blue-950">
     <div id="root"></div>
-    <script type="module" src="./src/main.tsx"></script>
+    <script
+      type="module"
+      src="./src/main.tsx"
+      onerror="window.__loadPrebuiltBundleFallback && window.__loadPrebuiltBundleFallback()"
+    ></script>
+    <script>
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          if (!window.__AURELIA_APP_MOUNTED__) {
+            window.__loadPrebuiltBundleFallback();
+          }
+        }, 350);
+      });
+    </script>
   </body>
 </html>

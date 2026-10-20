@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    // Use relative base path './' so built assets (/assets/*) load properly on GitHub Pages
+    // Use relative base path './' so built assets load properly on GitHub Pages
     // subpaths (https://<username>.github.io/<repo-name>/) as well as root domains.
     base: './',
     plugins: [react(), tailwindcss()],
@@ -18,6 +18,13 @@ export default defineConfig(() => {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: false,
+      rollupOptions: {
+        output: {
+          entryFileNames: 'assets/app.js',
+          chunkFileNames: 'assets/[name].js',
+          assetFileNames: 'assets/app.[ext]',
+        },
+      },
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

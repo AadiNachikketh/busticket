@@ -3,6 +3,14 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
+declare global {
+  interface Window {
+    __AURELIA_APP_MOUNTED__?: boolean;
+  }
+}
+
+window.__AURELIA_APP_MOUNTED__ = true;
+
 interface ErrorBoundaryState {
   hasError: boolean;
   errorMessage: string;
@@ -53,8 +61,11 @@ class RootErrorBoundary extends React.Component<
   }
 }
 
-createRoot(document.getElementById('root')!).render(
-  <RootErrorBoundary>
-    <App />
-  </RootErrorBoundary>
-);
+const rootEl = document.getElementById('root');
+if (rootEl) {
+  createRoot(rootEl).render(
+    <RootErrorBoundary>
+      <App />
+    </RootErrorBoundary>
+  );
+}
