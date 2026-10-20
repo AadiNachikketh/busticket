@@ -1,0 +1,253 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated Aurelia Overland passenger profile stored per user UID",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the owner",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Passenger full legal name",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified passenger email address",
+          "minLength": 3,
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "description": "Indian mobile number",
+          "minLength": 6,
+          "maxLength": 30
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["Sovereign Privé", "Emerald Crest", "Ivory Member"],
+          "maxLength": 40
+        },
+        "membershipNumber": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 40
+        },
+        "homeCity": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40
+        },
+        "preferredDietary": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "defaultChauffeurAddress": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "milesCompletedKm": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when profile was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when profile was last updated"
+        }
+      },
+      "required": [
+        "uid",
+        "fullName",
+        "email",
+        "phone",
+        "tier",
+        "membershipNumber",
+        "homeCity",
+        "preferredDietary",
+        "defaultChauffeurAddress",
+        "milesCompletedKm",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserBooking": {
+      "title": "UserBooking",
+      "description": "Confirmed intercity luxury bus reservation owned by an authenticated user",
+      "type": "object",
+      "properties": {
+        "pnr": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 40,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "transactionId": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 60
+        },
+        "coachId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "coachName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "coachCode": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 30
+        },
+        "origin": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "destination": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "originTerminal": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "destinationTerminal": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "travelDate": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 30
+        },
+        "departureTime": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 20
+        },
+        "arrivalTime": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 20
+        },
+        "selectedSeats": {
+          "type": "array",
+          "description": "Bounded list of up to 4 selected berth IDs"
+        },
+        "passengerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "passengerEmail": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 150
+        },
+        "passengerPhone": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 30
+        },
+        "dietaryPreference": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "chauffeurPickup": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "paymentMethodLabel": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "totalInr": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Confirmed", "Completed", "Cancelled"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "pnr",
+        "userId",
+        "transactionId",
+        "coachId",
+        "coachName",
+        "coachCode",
+        "origin",
+        "destination",
+        "originTerminal",
+        "destinationTerminal",
+        "travelDate",
+        "departureTime",
+        "arrivalTime",
+        "selectedSeats",
+        "passengerName",
+        "passengerEmail",
+        "passengerPhone",
+        "dietaryPreference",
+        "chauffeurPickup",
+        "paymentMethodLabel",
+        "totalInr",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Private passenger profile document accessible strictly by the authenticated owner"
+    },
+    "/bookings/{bookingId}": {
+      "schema": {
+        "$ref": "#/entities/UserBooking"
+      },
+      "description": "Confirmed intercity bus booking documents isolated to the authenticated passenger UID"
+    }
+  }
+}

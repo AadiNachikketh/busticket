@@ -1,0 +1,6 @@
+{
+  "name": "Aurelia Overland — Luxury Intercity Motorcoach Transit",
+  "description": "Private suite motorcoach transit across major Indian cities with real-time deck seat selection, CAPTCHA-secured checkout, payment gateway integration, and member trip management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

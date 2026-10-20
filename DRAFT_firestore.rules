@@ -1,0 +1,226 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1 & Phase 4.1: Global Safety Net (Default-deny catch-all)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Hardened Global Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Pillar 2: Validation Blueprint for UserProfile
+    function isValidUserProfile(data) {
+      return data.keys().hasAll([
+        'uid',
+        'fullName',
+        'email',
+        'phone',
+        'tier',
+        'membershipNumber',
+        'homeCity',
+        'preferredDietary',
+        'defaultChauffeurAddress',
+        'milesCompletedKm',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'fullName',
+        'email',
+        'phone',
+        'tier',
+        'membershipNumber',
+        'homeCity',
+        'preferredDietary',
+        'defaultChauffeurAddress',
+        'milesCompletedKm',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.uid is string && data.uid == request.auth.uid && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 100 &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 150 &&
+      data.phone is string && data.phone.size() >= 6 && data.phone.size() <= 30 &&
+      data.tier is string && data.tier in ['Sovereign Privé', 'Emerald Crest', 'Ivory Member'] && data.tier.size() <= 40 &&
+      data.membershipNumber is string && data.membershipNumber.size() >= 4 && data.membershipNumber.size() <= 40 &&
+      data.homeCity is string && data.homeCity.size() >= 2 && data.homeCity.size() <= 40 &&
+      data.preferredDietary is string && data.preferredDietary.size() >= 2 && data.preferredDietary.size() <= 80 &&
+      data.defaultChauffeurAddress is string && data.defaultChauffeurAddress.size() >= 2 && data.defaultChauffeurAddress.size() <= 200 &&
+      data.milesCompletedKm is number && data.milesCompletedKm >= 0 && data.milesCompletedKm <= 1000000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Pillar 2 & 5: Validation Blueprint for UserBooking
+    function isValidUserBooking(data) {
+      return data.keys().hasAll([
+        'pnr',
+        'userId',
+        'transactionId',
+        'coachId',
+        'coachName',
+        'coachCode',
+        'origin',
+        'destination',
+        'originTerminal',
+        'destinationTerminal',
+        'travelDate',
+        'departureTime',
+        'arrivalTime',
+        'selectedSeats',
+        'passengerName',
+        'passengerEmail',
+        'passengerPhone',
+        'dietaryPreference',
+        'chauffeurPickup',
+        'paymentMethodLabel',
+        'totalInr',
+        'status',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'pnr',
+        'userId',
+        'transactionId',
+        'coachId',
+        'coachName',
+        'coachCode',
+        'origin',
+        'destination',
+        'originTerminal',
+        'destinationTerminal',
+        'travelDate',
+        'departureTime',
+        'arrivalTime',
+        'selectedSeats',
+        'passengerName',
+        'passengerEmail',
+        'passengerPhone',
+        'dietaryPreference',
+        'chauffeurPickup',
+        'paymentMethodLabel',
+        'totalInr',
+        'status',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.pnr is string && data.pnr.size() >= 4 && data.pnr.size() <= 40 && data.pnr.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.transactionId is string && data.transactionId.size() >= 4 && data.transactionId.size() <= 60 &&
+      data.coachId is string && data.coachId.size() >= 2 && data.coachId.size() <= 60 &&
+      data.coachName is string && data.coachName.size() >= 2 && data.coachName.size() <= 100 &&
+      data.coachCode is string && data.coachCode.size() >= 2 && data.coachCode.size() <= 30 &&
+      data.origin is string && data.origin.size() >= 2 && data.origin.size() <= 50 &&
+      data.destination is string && data.destination.size() >= 2 && data.destination.size() <= 50 &&
+      data.originTerminal is string && data.originTerminal.size() >= 2 && data.originTerminal.size() <= 120 &&
+      data.destinationTerminal is string && data.destinationTerminal.size() >= 2 && data.destinationTerminal.size() <= 120 &&
+      data.travelDate is string && data.travelDate.size() >= 4 && data.travelDate.size() <= 30 &&
+      data.departureTime is string && data.departureTime.size() >= 2 && data.departureTime.size() <= 20 &&
+      data.arrivalTime is string && data.arrivalTime.size() >= 2 && data.arrivalTime.size() <= 20 &&
+      data.selectedSeats is list && data.selectedSeats.size() >= 1 && data.selectedSeats.size() <= 4 &&
+      data.selectedSeats[0] is string && data.selectedSeats[0].size() >= 2 && data.selectedSeats[0].size() <= 10 &&
+      data.passengerName is string && data.passengerName.size() >= 2 && data.passengerName.size() <= 100 &&
+      data.passengerEmail is string && data.passengerEmail.size() >= 3 && data.passengerEmail.size() <= 150 &&
+      data.passengerPhone is string && data.passengerPhone.size() >= 6 && data.passengerPhone.size() <= 30 &&
+      data.dietaryPreference is string && data.dietaryPreference.size() >= 2 && data.dietaryPreference.size() <= 80 &&
+      data.chauffeurPickup is string && data.chauffeurPickup.size() >= 2 && data.chauffeurPickup.size() <= 200 &&
+      data.paymentMethodLabel is string && data.paymentMethodLabel.size() >= 2 && data.paymentMethodLabel.size() <= 80 &&
+      data.totalInr is number && data.totalInr >= 500 && data.totalInr <= 500000 &&
+      data.status is string && data.status in ['Confirmed', 'Completed', 'Cancelled'] && data.status.size() <= 20 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Collection 1: /users/{userId} (PII Isolated to Owner Only)
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+      allow create: if isVerifiedUser() &&
+        isOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if (
+        isVerifiedUser() &&
+        isValidUserProfile(incoming()) &&
+        isOwner(userId) &&
+        isValidId(userId) &&
+        incoming().uid == existing().uid &&
+        incoming().email == existing().email &&
+        incoming().tier == existing().tier &&
+        incoming().membershipNumber == existing().membershipNumber &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          // Action: UpdateProfilePreferences
+          (incoming().diff(existing()).affectedKeys().hasOnly([
+            'fullName',
+            'phone',
+            'homeCity',
+            'preferredDietary',
+            'defaultChauffeurAddress',
+            'milesCompletedKm',
+            'updatedAt'
+          ]))
+        )
+      );
+      allow delete: if false;
+    }
+
+    // Collection 2: /bookings/{bookingId} (Relational Ownership & Terminal State Locking)
+    match /bookings/{bookingId} {
+      allow get: if isSignedIn() && isValidId(bookingId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() &&
+        isValidId(bookingId) &&
+        isValidUserBooking(incoming()) &&
+        incoming().status == 'Confirmed' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(incoming().userId));
+      allow update: if (
+        isVerifiedUser() &&
+        isValidUserBooking(incoming()) &&
+        isValidId(bookingId) &&
+        existing().userId == request.auth.uid &&
+        incoming().userId == existing().userId &&
+        incoming().pnr == existing().pnr &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        existing().status == 'Confirmed' &&
+        (
+          // Action: CancelBooking (Terminal state transition Confirmed -> Cancelled)
+          (incoming().status == 'Cancelled' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+        )
+      );
+      allow delete: if false;
+    }
+  }
+}
